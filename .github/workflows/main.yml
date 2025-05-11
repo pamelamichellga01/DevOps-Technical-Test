@@ -1,0 +1,55 @@
+# Nombre del workflow que aparecerá en la pestaña "Actions" de GitHub
+name: Java CI/CD Pipeline
+
+# Condición para que el workflow se active: cuando alguien haga push a la rama 'main'
+on:
+  push:
+    branches:
+      - main
+
+# Definición del trabajo (job) llamado 'build'
+jobs:
+  build:
+    # El job se ejecuta en un runner Ubuntu que provee GitHub
+    runs-on: ubuntu-latest
+
+    # Lista de pasos a ejecutar dentro del job
+    steps:
+
+      # Etapa 1: Application Build
+      # Paso 1: Clona el repositorio en el entorno del runner
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Paso 2: Configura Java 17 en el entorno
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+
+      # Paso 3: Compila el proyecto Java con Maven
+      # Genera el archivo .jar dentro de la carpeta target/
+      - name: Compile Java project
+        run: mvn clean install
+
+      # Paso 4: Sube el .jar como artefacto del pipeline
+      # Esto es útil para descargarlo o usarlo en otras etapas
+      - name: Upload JAR as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: parkinglot-jar                      # Nombre del artefacto
+          path: target/parkinglot-0.0.1-SNAPSHOT.jar # Ruta del .jar generado
+
+      # Etapa 2: Docker Build
+
+      # Paso 5: Hace login en DockerHub usando los secretos del repositorio
+      - name: Log in to DockerHub
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
+      # Paso 6: Construye la imagen Docker usando el Dockerfile
+      - name: Build Docker image
+        run: docker build -t duvangt/pamela-galvis:v1.0 .
+
+      # Paso 7: Sube la imagen construida a DockerHub
+      - name: Push Docker image
+        run: docker push duvangt/pamela-galvis:v1.0
