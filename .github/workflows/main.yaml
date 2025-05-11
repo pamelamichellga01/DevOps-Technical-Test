@@ -37,4 +37,3 @@ jobs:
 
       - name: Push Docker image
         run: docker push duvangt/pamela-galvis:v1.0
-
