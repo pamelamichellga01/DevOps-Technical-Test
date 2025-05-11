@@ -23,7 +23,7 @@ jobs:
         run: mvn clean install
 
       - name: Upload JAR as artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: parkinglot-jar
           path: target/parkinglot-0.0.1-SNAPSHOT.jar
