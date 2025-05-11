@@ -33,6 +33,7 @@ jobs:
       - name: Log in to DockerHub
         run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
+
       - name: Build Docker image
         run: docker build -t duvangt/pamela-galvis:v1.0 .
 
