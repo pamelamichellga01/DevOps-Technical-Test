@@ -6,11 +6,10 @@ on:
       - master
 
 jobs:
-  build:
+  application-build:
+    name: Application Build
     runs-on: ubuntu-latest
-
     steps:
-      # Etapa 1: Application Build
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -29,7 +28,20 @@ jobs:
           name: parkinglot-jar
           path: target/parkinglot-0.0.1-SNAPSHOT.jar
 
-      # Etapa 2: Docker Build
+  docker-build:
+    name: Docker Build
+    runs-on: ubuntu-latest
+    needs: application-build  # Espera a que termine el anterior
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download built JAR
+        uses: actions/download-artifact@v4
+        with:
+          name: parkinglot-jar
+          path: target/
+
       - name: Log in to DockerHub
         run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
@@ -38,6 +50,3 @@ jobs:
 
       - name: Push Docker image
         run: docker push duvangt/pamela-galvis:v1.0
-
-
-
