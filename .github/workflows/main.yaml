@@ -7,12 +7,12 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
 
     steps:
       # Etapa 1: Application Build
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Java
         uses: actions/setup-java@v4
@@ -32,7 +32,6 @@ jobs:
       # Etapa 2: Docker Build
       - name: Log in to DockerHub
         run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
-
 
       - name: Build Docker image
         run: docker build -t duvangt/pamela-galvis:v1.0 .
